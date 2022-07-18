@@ -189,7 +189,7 @@ from employees
 order by department_id;  --오름차순
 
 select last_name, department_id
-from employees
+from employees --order by문은 제일 마지막에 온다
 order by department_id desc; --내림차순
 --100번 부서에서 입사일순으로 나열하기
 select last_name, hire_date
@@ -204,4 +204,4 @@ order by 2 desc;  --index값으로도 할수있음 --별명도 가능
 select last_name, department_id, salary
 from employees
 where department_id > 80
-order by department_id asc, salary desc;
+order by department_id asc, salary desc; --n차 정렬

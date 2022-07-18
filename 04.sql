@@ -59,7 +59,7 @@ select to_char(hire_date, 'DD Month RR')
 from employees;
 
 --fill mode
-select to_char(hire_date, 'fmDD Month RR') 
+select to_char(hire_date, 'fmDD Month RR') --fill mode (fm)
 from employees;
 
 --과제  사원들의 이름, 입사일, 인사평가일을 조회하라
@@ -98,7 +98,7 @@ from employees
 where hire_date = to_date('sep 21, 2005', 'Mon dd, yyyy');
 
 select last_name, hire_date
-from employees                  --Format extract 정확하게바꿔줘 --error
+from employees                  --Format extract(fx) 정확하게바꿔줘 --error
 where hire_date = to_date('Sep 21, 2005', 'fxMon dd, yy'); 
 
 -----------------------------------------------
@@ -141,6 +141,8 @@ order by ann_sal desc;
 select last_name, nvl(to_char(commission_pct), 'No Commission')   
 from employees;
 
+select job_id, nvl2(commission_pct, 'SAL+COMM', 'SAL') income
+from employees;
 
 select job_id, nvl2(commission_pct, 'SAL+COMM', 0) income
 from employees;

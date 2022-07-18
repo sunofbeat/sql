@@ -136,7 +136,7 @@ where department_id = 90;
 
 --개월수 비교하기
 select months_between('2022/12/31', '2021/12/31')
-from dual;
+from dual; --앞에 파라미터가 큰날짜, 뒤에가 작은날짜
 
 --1개월 뒤를 구하라
 select add_months('2022/07/14', 1)
