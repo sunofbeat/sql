@@ -31,6 +31,15 @@ where department_id = (select department_id
                         where last_name = 'Abel')
 and last_name <> 'Abel'                        
 order by 1;
+
+--과제 IT부서에서 일하는 사원들의 부서번호, 이름, 직업을 조회하라.
+select department_id, last_name, job_id
+from employees
+where department_id = (select department_id
+                    from departments
+                    where department_name like 'IT');
+
+
 --sbuquery의 select 구문은 하나여야 비교가능하다  
                         
 select last_name, salary
@@ -58,6 +67,7 @@ from employees
 where salary >= (select avg(salary)
                         from employees)
 order by 3;
+
 
 -----------------------------------
 select employee_id, last_name
@@ -113,6 +123,114 @@ where salary < all (select salary
                     from employees
                     where job_id = 'IT_PROG')
 and job_id <> 'IT_PROG';
+
+--과제 60번 부서의 일부 사원보다 급여가 많은 사원들의 이름을 조회하라.
+select last_name
+from employees
+where salary > any (select salary
+                    from employees
+                    where department_id = 60)
+order by 1;
+
+--과제 회사 평균 월급 보다 더 받고, 그리고 모든 프로그래머보다 월급을 더 받는,
+--      사원들의 이름, 직업, 월급을 조회
+select last_name, job_id, salary
+from employees
+where salary > (select avg(salary)
+                from employees)
+and salary > all(select salary
+                from employees
+                where job_id = 'IT_PROG');
+--------------------------------------------   
+
+--no row
+select last_name
+from employees
+where salary = (select salary
+                from employees
+                where employee_id = 1);
+
+select last_name
+from employees
+where salary in (select salary
+                from employees
+                where job_id = 'IT');
+                
+--null
+select last_name
+from employees
+where employee_id in (select manager_id
+                        from employees);
+                        
+select last_name
+from employees
+where employee_id not in (select manager_id
+                        from employees); 
+                        
+--과제 위 문장으로 all 연산자로 refactoring하라
+select last_name
+from employees
+where employee_id <> all (select manager_id
+                        from employees);
+------------------------------------------
+select count(*)
+from departments;
+
+--사원이 있는부서의 수
+select count(*)
+from departments d
+where exists (select *
+                from employees e
+                where e.department_id = d.department_id);
+
+--사원이 없는 부서의 수
+select count(*)
+from departments d
+where not exists (select *
+                from employees e
+                where e.department_id = d.department_id);
+                
+--과제] 직업을 바꾼 적이 있는 사원들의 사번, 이름, 직업을 조회
+select employee_id, last_name, job_id
+from employees e
+where exists (select *
+            from job_history j
+            where e.employee_id = j.employee_id)
+order by 1;
+            
+select *
+from job_history
+order by employee_id;
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
 
 
 
