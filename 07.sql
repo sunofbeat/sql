@@ -1,0 +1,123 @@
+--subquery
+
+--Abel의 월급을 초과하는 직원을 구하는 쿼리
+select last_name, salary
+from employees
+where salary > (select salary
+                from employees 
+                where last_name = 'Abel');
+                
+--과제] Kochhar 에게 보고하는 사원들의 이름, 월급을 조회하라
+select last_name, salary
+from employees
+where manager_id = (select employee_id
+                        from employees
+                        where last_name = 'Kochhar');
+                
+select last_name, job_id, salary
+from employees
+where job_id = (select job_id
+                from employees
+                where last_name = 'Ernst')
+and salary > (select salary
+                from employees
+                where last_name = 'Ernst');
+                
+--과제 abel과 같은 부서에서 일하는 동료들의 이름, 입사일을 조회하라
+select last_name, hire_date
+from employees
+where department_id = (select department_id
+                        from employees
+                        where last_name = 'Abel')
+and last_name <> 'Abel'                        
+order by 1;
+--sbuquery의 select 구문은 하나여야 비교가능하다  
+                        
+select last_name, salary
+from employees
+where salary = (select salary
+              from employees
+              where last_name = 'King');    --error      
+                    
+select last_name, job_id, salary
+from employees
+where salary = (select min(salary)
+                from employees);
+                
+select department_id, min(salary)
+from employees
+group by department_id
+having min(salary) > (select min(salary)
+                        from employees
+                        where department_id = 50);
+                        
+--과제 회사 평균 월급 이상 버는 사원들의 사번, 이름, 월급을 조회하라.
+--  월급은 오름차순정렬한다.
+select employee_id, last_name, salary
+from employees
+where salary >= (select avg(salary)
+                        from employees)
+order by 3;
+
+-----------------------------------
+select employee_id, last_name
+from employees
+where salary = (select min(salary)
+                from employees
+                group by department_id); --error
+                
+--과제 이름에 u가 포함된 사원이 있는과 같은 부서에서 일하는 사원들의 
+-- 사번, 이름을 조회하라.
+select employee_id, last_name
+from employees
+where department_id in (select department_id
+                        from employees
+                        where last_name like '%u%');
+                        
+--과제 1700번 지역에 위치한 부서에서 일하는 
+--사원들의 이름, 직업, 부서번호를 조회
+select last_name, job_id, department_id
+from employees
+where department_id in (select department_id
+                        from departments
+                        where location_id = 1700);
+
+
+--sub에서 group Fx을 썻다면 in을 붙여준다
+--위 코드와 비교
+select employee_id, last_name
+from employees
+where salary in (select min(salary)
+                from employees
+                group by department_id);
+                
+--(any)sub에서 1개라도 true면 리턴함
+select employee_id, last_name
+from employees
+where salary = any (select min(salary)
+                   from employees
+                  group by department_id);
+
+select employee_id, last_name, job_id, salary
+from employees
+where salary < any (select salary
+                    from employees
+                    where job_id = 'IT_PROG')
+and job_id <> 'IT_PROG';
+
+
+--all은 모든값이 true여야 리턴됨
+select employee_id, last_name, job_id, salary
+from employees
+where salary < all (select salary
+                    from employees
+                    where job_id = 'IT_PROG')
+and job_id <> 'IT_PROG';
+
+
+
+
+
+
+
+                        

@@ -319,6 +319,268 @@ select job_id, sum(decode(department_id, 20, salary)) "20",
 from employees
 group by job_id;
 
+---------------------------------------------
+
+--join
+select department_id, department_name, location_id
+from departments;
+
+select location_id, city
+from locations;
+
+--equi join
+select department_id, department_name, location_id, city
+from departments natural join locations;
+
+select department_id, department_name, location_id, city
+from departments natural join locations
+where department_id in(20, 50);
+
+select employee_id, last_name, department_id, location_id
+from employees join departments
+using (department_id);
+
+--위 코드의 누락된 1인을 구하라.
+select last_name, job_id, department_id
+from employees
+where department_id is null;
+---------------------------------
+
+select employee_id, last_name, department_id, location_id
+from employees natural join departments;
+
+-----------------
+--using
+select l.city, d.department_name
+from locations l join departments d
+using (location_id)
+where location_id = 1400;
+
+select e.last_name, d.department_name
+from employees e join departments d
+using (department_id)
+where d.manager_id = 100;
+
+select e.last_name, d.department_name
+from employees e join departments d
+using (department_id)
+where e.manager_id = 100;
+
+------------------------------
+--on
+select employee_id, e.last_name, e.department_id,
+        d.department_id, d.location_id
+from employees e join departments d
+on (e.department_id = d.department_id);
+
+select employee_id, city, department_name
+from employees e join departments d
+on e.department_id = d.department_id
+join locations l
+on d.location_id = l.location_id;
+
+--과제 위 문장을, using으로 refactoring하라
+
+select employee_id, city, department_id
+from employees e join departments d
+using (department_id)
+join locations l
+using (location_id);
+
+select e.employee_id, e.last_name, e.department_id,
+    d.department_id, d.location_id
+from employees e join departments d
+on e.department_id = d.department_id
+where e.manager_id = 149;
+
+select e.employee_id, e.last_name, e.department_id,
+    d.department_id, d.location_id
+from employees e join departments d
+on e.department_id = d.department_id
+and e.manager_id = 149;
+--where대신 and을 써도 결과는 같음
+
+--과제 Toronto에 위치한 부서에서 일하는 사원들의
+--  이름, 직업, 부서번호ㅡ 부서명을 조회하라.
+select e.last_name, e.job_id, e.department_id,
+    d.department_name, l.city
+from employees e join departments d
+on e.department_id = d.department_id
+join locations l
+on d.location_id = l.location_id
+and l.city = 'Toronto';
+
+--non-equi join
+--
+select e.last_name, e.salary, e.job_id
+from employees e join jobs j
+on e.salary between j.min_salary and j.max_salary
+and j.job_id = 'IT_PROG';
+
+--self join --table안의
+select worker.last_name emp, manager.last_name mgr
+from employees worker join employees manager
+on worker.manager_id = manager.employee_id;
+
+--과제 같은 부서에서 일하는 사원들의 부서번호 이름,  동료의 이름을 조회하라
+select e.department_id, e.last_name, c.last_name colleague
+from employees e join employees c
+on e.department_id = c.department_id
+and e.employee_id <> c.employee_id
+order by 1, 2, 3;
+
+--과제 Davies 보다 후에 입사한 사원들의 이름, 입사일을 조회하라.
+select e.last_name, e.hire_date
+from employees e join employees d
+on d.last_name = 'Davies'
+and e.hire_date > d.hire_date;
+
+-----------------------
+--과제 메니져보다 먼저 입사한 사원들의 이름, 입사일, 매니져명, 매니저 입사일을 조회
+select w.last_name, w.hire_date, m.last_name, m.hire_date
+from employees w join employees m
+on w.manager_id = m.employee_id
+and w.hire_date < m.hire_date;
+
+--inner join
+select e.last_name, e.department_id, d.department_name
+from employees e join departments d
+on e.department_id = d.department_id;
+
+--outer join
+select e.last_name, e.department_id, d.department_name
+from employees e left outer join departments d
+on e.department_id = d.department_id;
+
+select e.last_name, e.department_id, d.department_name
+from employees e right outer join departments d
+on e.department_id = d.department_id;
+
+select e.last_name, e.department_id, d.department_name
+from employees e full outer join departments d
+on e.department_id = d.department_id;
+
+--과제 사원들의 이름, 사번, 매니져명, 매니저의 사번을 조회하라
+--      King 사장도 테이블의 포함한다
+select e.last_name, e.employee_id, m.last_name, m.employee_id
+from employees e left outer join employees m
+on e.manager_id = e.employee_id
+order by 2;
+
+---------------------------------
+
+--옛날 join방식
+select d.department_id, d.department_name, d.location_id, l.city
+from departments d, locations l
+where d.location_id = l.location_id
+and d.department_id in(20, 50);
+
+select e.last_name, d.department_name, l.city
+from employees e, departments d, locations l
+where e.department_id = d.department_id
+and d.location_id = l.location_id;
+
+select e.last_name, e.salary, e.job_id
+from employees e, jobs j
+where e.salary between j.min_salary and j.max_salary
+and j.job_id = 'IT_PROG';
+
+select e.last_name, e.department_id, d.department_name
+from employees e, departments d
+where e.department_id(+) = d.department_id;
+--right outer join = 예전방식 왼쪽 칼럼명에(+)를 붙인다
+
+select e.last_name, e.department_id, d.department_name
+from employees e, departments d
+where e.department_id = d.department_id(+);
+--left outer join은 오른쪽칼럼에 (+)를 붙임
+
+--self join
+select worker.last_name || ' works for ' || manager.last_name
+from employees worker, employees manager 
+where worker.manager_id = manager.employee_id;
+
+--------------------------------------------
+--subquery
+--Abel의 월급을 초과하는 직원을 구하는 쿼리
+select last_name, salary
+from employees
+where salary > (select salary
+                from employees
+                where last_name = 'Abel');
+                
+--과제] Kochhar 에게 보고하는 사원들의 이름, 월급을 조회하라
+select last_name, salary
+from employees
+where manager_id = (select employee_id
+                    from employees
+                    where last_name = 'Kochhar');
+ 
+--과제 abel과 같은 부서에서 일하는 동료들의 이름, 입사일을 조회하라          
+select last_name, hire_date
+from employees
+where department_id = (select department_id
+                    from employees
+                    where last_name = 'Abel')
+and last_name <> 'Abel'
+order by 1;
+
+--과제 회사 평균 월급 이상 버는 사원들의 사번, 이름, 월급을 조회하라.
+--  월급은 오름차순정렬한다.
+select employee_id, last_name, salary
+from employees
+where salary >= (select avg(salary)
+                from employees)
+order by 3;
+
+--과제 이름에 u가 포함된 사원이 있는과 같은 부서에서 일하는 사원들의 
+-- 사번, 이름을 조회하라.
+select employee_id, last_name
+from employees
+where department_id in (select department_id
+                        from employees
+                        where last_name like '%u%');
+                        
+--과제 1700번 지역에 위치한 부서에서 일하는 
+--사원들의 이름, 직업, 부서번호를 조회
+select last_name, job_id, department_id
+from employees
+where department_id in (select department_id
+                        from departments
+                        where location_id = 1700);
+                        
+--(any)sub에서 1개라도 true면 리턴함                   
+select employee_id, last_name
+from employees
+where salary = any (select min(salary)
+                    from employees
+                    group by department_id);
+                    
+select employee_id, last_name, job_id, salary
+from employees
+where salary < any (select salary
+                    from employees
+                    where job_id = 'IT_PROG')
+and job_id <> 'IT_PROG';
+
+--all은 모든값이 true여야 리턴됨
+select employee_id, last_name, job_id, salary
+from employees
+where salary < all (select salary
+                    from employees
+                    where job_id = 'IT_PROG')
+and job_id <> 'IT_PROG';
+
+
+
+
+
+
+
+
+
+
+
 
 
 
