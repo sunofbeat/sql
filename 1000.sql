@@ -571,6 +571,123 @@ where salary < all (select salary
                     where job_id = 'IT_PROG')
 and job_id <> 'IT_PROG';
 
+---------------------
+--no row
+select last_name
+from employees
+where salary = (select salary
+                from employees
+                where employee_id = 1);
+                
+select last_name
+from employees
+where salary in (select salary
+                from employees
+                where job_id = 'IT');
+                
+--null
+select last_name
+from employees
+where employee_id in (select manager_id
+                        from employees);
+
+select last_name
+from employees
+where employee_id not in (select manager_id
+                            from employees);
+
+--과제 위 문장으로 all 연산자로 refactoring하라
+select last_name
+from employees
+where employee_id <> all (select manager_id
+                        from employees);
+                        
+select count(*)
+from departments;
+
+select count(*)
+from departments d
+where exists (select *
+                from employees e
+                where e.department_id = d.department_id);
+                
+--과제] 직업을 바꾼 적이 있는 사원들의 사번, 이름, 직업을 조회
+select employee_id, last_name, job_id
+from employees e
+where exists (select *
+            from job_history j
+            where e.employee_id = j.employee_id)
+order by 1;
+
+select *
+from job_history
+order by employee_id;
+
+-------------------------------------
+--set
+select employee_id, job_id
+from employees
+union
+select employee_id, job_id
+from job_history;
+
+select employee_id, job_id
+from employees
+union all
+select employee_id, job_id
+from job_history;
+
+--과제 과거 직업을 현재 갖고있는 사원들의 사번, 이름, 직업조회
+select e.employee_id, e.last_name, e.job_id
+from employees e, job_history j
+where e.employee_id = j.employee_id
+and e.job_id = j.job_id;
+
+select employee_id, job_id
+from employees
+intersect --교집합
+select employee_id, job_id
+from job_history;
+
+select employee_id, job_id
+from employees
+minus --차집합
+select employee_id, job_id
+from job_history;
+
+select location_id, department_name
+from departments
+union
+select location_id, state_province
+from locations;
+
+select location_id, department_name, null "State"
+from departments
+union
+select location_id, null, state_province
+from locations;
+
+select employee_id, job_id, salary
+from employees
+union
+select employee_id, job_id
+from job_history; --error  row값이 다름
+
+select employee_id, job_id, salary
+from employees
+union
+select employee_id, job_id, 0 --row값을 맞춰주면 해결
+from job_history;
+
+--DML
+
+
+
+
+
+
+
+
 
 
 

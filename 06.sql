@@ -91,7 +91,7 @@ select e.employee_id, e.last_name, e.department_id,
     d.department_id, d.location_id
 from employees e join departments d
 on e.department_id = d.department_id
-and e.manager_id = 149;
+and e.manager_id = 149; --조건문이 n개면 and을 쓸수 있음
 
 --과제 Toronto에 위치한 부서에서 일하는 사원들의
 --  이름, 직업, 부서번호ㅡ 부서명을 조회하라.

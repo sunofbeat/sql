@@ -177,6 +177,7 @@ select count(*)
 from departments;
 
 --사원이 있는부서의 수
+--exists 존재하는지 물어보는 Fx
 select count(*)
 from departments d
 where exists (select *
