@@ -196,6 +196,69 @@ select constraint_name, constraint_type, table_name
 from user_constraints;
 
 
+create table emps(
+employee_idm number(3) primary key, --제약조건
+emp_name varchar2(10) constraint emps_empname_nn not null,
+email varchar2(20),                    
+salary number(6) constraint emp_sal_ck check(salary > 1000), 
+department_id number(3),
+constraint emps_email_uk unique(email), --email칼럼을 조사했다고 명시
+constraint emps_deptid_fx foreign key(department_id)
+    references depts(department_id));
+    
+select constraint_name, constraint_type, table_name
+from user_constraints;
+
+insert into depts values(100, 'Development');
+insert into emps values(500, 'musk', 'musk@gmail.com', 5000, 100);
+commit;
+
+--무결성
+delete depts; --error
+
+insert into depts values(100, 'Marketing'); --error, (YOU.DEPTS_DEPTID_PK) violated
+insert into depts values(null, 'Marketing'); --error, cannot insert NULL
+insert into emps values(501, null, 'good@gmail.com', 6000, 100); --error,  cannot insert NULL
+insert into emps values(501, 'label', 'musk@gmail.com', 6000, 100); --error
+insert into emps values(501, 'abel', 'good@gmail.com', 6000, 200); --error, parent key not found
+
+drop table emps cascade constraints;
+
+select constraint_name, constraint_type, table_name
+from user_constraints;
+
+--system user
+grant all on hr.departments to you;
+
+-- you user
+drop table employees cascade constraints; -- 복습시 드랍후 연습
+create table employees(    
+employee_id number(6) constraint emp_empid_pk primary key,
+first_name varchar2(20),  --table에서 primary key조건은 하나만 존재할수있다.
+last_name varchar2(25) constraint emp_lastname_nn not null,
+email varchar2(25) constraint emp_email_nn not null
+                    constraint emp_email_pk unique,
+phone_number varchar2(20),
+hire_date date constraint emp_hiredate_nn not null,
+job_id varchar2(10) constraint emp_jobid_nn not null,
+salary number(8) constraint emp_salary_ck check(salary > 0),
+commission_pct number(2, 2),
+manager_id number(6) constraint emp_managerid_fx references employees(employee_id),
+department_id number(4) constraint emp_dept_fx references hr.departments(department_id));
+
+
+
+
+
+
+
+
+
+
+
+
+
+
 
 
 

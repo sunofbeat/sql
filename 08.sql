@@ -1,7 +1,7 @@
 -- set
 select employee_id, job_id
 from employees
-union
+union  
 select employee_id, job_id
 from job_history;
 
@@ -56,7 +56,7 @@ from job_history; --error
 select employee_id, job_id, salary
 from employees
 union
-select employee_id, job_id, 0
+select employee_id, job_id, 0 --row값을 맞춰주면 해결
 from job_history
 order by salary;
 
