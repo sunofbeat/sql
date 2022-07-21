@@ -85,6 +85,8 @@ select initcap(last_name), length(last_name)
 from employees
 where last_name like 'j%' or last_name like 'A%' or last_name like 'M%';
 
+  
+
 ------------------------------------
 --숫자를 다루는 Function
 --(반올림)앞부분은 수, 뒷부분은 소수점자리

@@ -1,16 +1,16 @@
 -- DML(Date Manipulation Language)
 
---삭제
+--삭제(drop)
 drop table emp; 
 drop table dept; 
 
 create table emp(
-employee_id number(6),
+employee_id number(6), --(size)
 first_name varchar2(20),
 last_name varchar2(25),
 email varchar2(25),
 phone_number varchar2(20),
-hire_date date,
+hire_date date, --date에는 size가 없음
 job_id varchar2(10),
 salary number(8),
 commission_pct number(2, 2),
@@ -61,6 +61,8 @@ values(320, 'Terry', 'Benard',
         
 commit;
 
+--------------------------------
+
 drop table sa_reps;
 
 create table sa_reps(
@@ -84,8 +86,8 @@ begin
         insert into sa_reps(id, name, salary, commission_pct)
         values(base + i, 'n' || (base + i ), base * i, i * 0.01);
     end loop;
-end;  --프로시저
-/
+end;  
+/       --프로시저(procedure)  '/'로 마무리
 
 select * from sa_reps;
 

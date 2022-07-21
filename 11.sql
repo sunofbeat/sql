@@ -1,6 +1,9 @@
---view
+--view 
 --query에 붙인 별명은 view
 --query에 별명이 view
+--view에는 데이터가 없음!!
+
+--hr user
 drop view empvu80;
 
 create view empvu80 as
@@ -61,11 +64,33 @@ create or replace view empvu10(emplyee_num, employee_name, job_title) as
     select employee_id, last_name, job_id
     from employees
     where department_id = 10
-    with read only;
+    with read only; --view를 만들게 되면 read only라는 제약조건을 만드는걸 권장
     
 insert into empvu10 values(501, 'able', 'Sales'); --error, cannot perform a DML
 
+-----------------------------------------
 
+--sequence
+drop sequence team_teamid_seq;
+
+create sequence team_teamid_seq;
+
+select team_teamid_seq.nextval from dual;
+select team_teamid_seq.nextval from dual;
+select team_teamid_seq.currval from dual;
+
+insert into teams
+values(team_teamid_seq.nextval, 'Marketing');
+    
+select * from teams
+where team_id = 3;
+    
+
+
+
+
+    
+    
     
     
     

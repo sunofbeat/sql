@@ -69,7 +69,6 @@ select last_name, to_char(hire_date, 'YYYY.MM.DD') hire_date,
     to_char(next_day(add_months(hire_date, 3), 2), 'YYYY.MM.DD') review_day
 from employees;
 
-
 select to_char(salary)
 from employees;
 
