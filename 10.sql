@@ -199,7 +199,7 @@ aid number(1),
 constraint b_aid_fx foreign key(aid) references a(aid));
 
 insert into a values(1);
-insert into b values(31, 1);
+insert into b values(31, 1); --error
 insert into b values(32, 9); --error, parent key not found
 
 --제약조건을 끊음

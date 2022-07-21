@@ -232,10 +232,254 @@ create table employees(
 employee_id number(6) constraint emp_empid_pk primary key,
 first_name varchar2(20),
 last_name varchar2(25) constraint emp_lastname_nn not null,
-email varchar2(25) constraint emp_email_nn
+email varchar2(25) constraint emp_email_nn not null
+                    constraint emp_email_pk unique,
+phone_number varchar2(20),
+hire_date date constraint emp_hiredate_nn not null,
+job_id varchar2(10) constraint emp_jobid_nn not null,
+salary number(8) constraint emp_salary_ck check(salary > 0),
+commission_pct number(2, 2),
+manager_id number(6) constraint emp_managerid_fx references employees(employee_id),
+department_id number(4) constraint emp_dept_fx references hr.departments(department_id));
+
+create table emps(
+employee_id number(3) primary key, --제약조건
+emp_name varchar2(10) constraint emps_empname_nn not null,
+email varchar2(20),                    
+salary number(6) constraint emp_sal_ck check(salary > 1000), 
+department_id number(3),
+constraint emps_email_uk unique(email), --email칼럼을 조사했다고 명시
+constraint emps_deptid_fx foreign key(department_id)
+    references depts(department_id));
+
+select constraint_name, constraint_type, table_name
+from user_constraints;
+
+insert into depts values(100, 'Development');
+insert into emps values(500, 'musk', 'musk@gmail.com', 5000, 100);
+
+commit;
+
+delete depts;
+
+drop table emps cascade constraints;
+
+select constraint_name, constraint_type, table_name
+from user_constraints;
+
+--system
+grant all on hr.departments to you;
+
+--you
+drop table employees cascade constraints; -- 복습시 드랍후 연습
+create table employees(    
+employee_id number(6) constraint emp_empid_pk primary key,
+first_name varchar2(20),  --table에서 primary key조건은 하나만 존재할수있다.
+last_name varchar2(25) constraint emp_lastname_nn not null,
+email varchar2(25) constraint emp_email_nn not null
+                    constraint emp_email_pk unique,
+phone_number varchar2(20),
+hire_date date constraint emp_hiredate_nn not null,
+job_id varchar2(10) constraint emp_jobid_nn not null,
+salary number(8) constraint emp_salary_ck check(salary > 0),
+commission_pct number(2, 2),
+manager_id number(6) constraint emp_managerid_fx references employees(employee_id),
+department_id number(4) constraint emp_dept_fx references hr.departments(department_id));
+
+
+--on delete
+drop table gu cascade constraints;
+drop table dong cascade constraints;
+drop table dong2 cascade constraints;
+
+create table gu (
+gu_id number(3) primary key,
+gu_name char(9) not null);
+
+create table dong(
+dong_id number(4) primary key,
+dong_name varchar2(12) not null,
+gu_id number(3) references gu(gu_id) on delete cascade);
+
+create table dong2(
+dong_id number(4) primary key,
+dong_name varchar2(12) not null,
+gu_id number(3) references gu(gu_id) on delete set null
 );
 
+insert into gu values(100, '강남구');
+insert into gu values(200, '노원구');
 
+insert into dong values(5000, '압구정동', null); 
+insert into dong values(5001, '삼성동', 100);
+insert into dong values(5002, '역삼동', 100);
+insert into dong values(6001, '상계동', 200);
+insert into dong values(6002, '중계동', 200);
+
+
+insert into dong2
+select * from dong;
+
+delete gu
+where gu_id = 100;
+
+select * from dong;
+select * from dong2;
+
+commit;
+
+----------------------------------
+drop table a cascade constraints;
+drop table b cascade constraints;
+
+create table a(
+aid number(1) constraint a_aid_pk primary key);
+
+create table b(
+bid number(2),
+
+aid number(1),
+constraint b_aid_fx foreign key(aid) references a(aid));
+
+insert into a values(1);
+insert into b values(31, 1); --error
+
+alter table b disable constraint b_aid_fx;
+insert into b values(32, 9);
+
+alter table b enable constraint b_aid_fx; --error, parent keys not found
+alter table b enable novalidate constraint b_aid_fx;
+--포린키 다시 살림
+
+insert into b values(33, 8); --error parent key not found
+----------------------------------
+
+--sub
+drop table sub_departments;
+
+create table sub_departments as
+    select department_id dept_id, department_name dept_name
+    from hr.departments;
+    
+desc sub_departments
+    
+select * from sub_departments;
+
+--------------------------------------
+
+drop table users cascade constraints;
+
+create table users(
+user_id number(3));
+
+desc users
+
+--추가
+alter table users add(user_name varchar2(10));
+desc users
+
+
+--수정
+alter table users modify(user_name number(7));
+desc users
+
+--칼럼지우기
+alter table users drop column user_name;
+desc users
+
+--테이블을 읽기전용으로 바꾸기
+insert into users values(1);
+
+alter table users read only; --읽기전용으로 바꿈
+insert into users values(2); --error update작업이 허용되지않음
+
+alter table users read write; --쓰기전용으로 다시 바꿈
+insert into users values(2); --추가 가능
+
+commit;
+----------------------------------------
+
+--view
+drop view empvu80;
+
+create view empvu80 as
+    select employee_id, last_name, department_id
+    from employees
+    where department_id = 80;
+    
+desc empvu80
+--select절의 구조가 뷰의모든걸 나타냄
+
+select * from empvu80; --한줄로 밑에 쿼리를 다 나타냄
+
+select * from ( --view가 없었다면 이렇게 길게 썼어야 했다!
+    select employee_id, last_name, department_id
+    from employees
+    where department_id = 80);
+    
+    --없으면 create해주고
+create or replace view empvu80 as
+    select employee_id, job_id
+    from employees
+    where department_id = 80;
+    
+desc empvu80
+------------------------
+    
+drop table teams;
+drop view team50;
+
+create table teams as
+    select department_id team_id, department_name team_name
+    from departments;
+    
+create view team50 as
+    select *
+    from teams
+    where team_id = 50;
+    
+select * from team50;   
+
+select count(*) from teams;
+    
+insert into team50 --team50에 insert한것이 teams로 들어감
+values(300, 'Marketing');
+select count(*) from teams;
+    
+create or replace view team50 as
+    select *
+    from teams
+    where team_id = 50
+    with check option; --제약조건
+    
+insert into team50 values(50, 'IT Support');
+select count(*) from teams;
+insert into team50 values(301, 'IT Support'); --error, view WITH CHECK OPTION where-clause violation
+    
+create or replace view empvu10(emplyee_num, employee_name, job_title) as
+    select employee_id, last_name, job_id
+    from employees
+    where department_id = 10
+    with read only; --view를 만들게 되면 read only라는 제약조건을 만드는걸 권장
+    
+insert into empvu10 values(501, 'able', 'Sales'); --error, cannot perform a DML
+
+-----------------------------------------
+
+--sequence
+drop sequence team_teamid_seq;
+
+create sequence team_teamid_seq;
+
+select team_teamid_seq.nextval from dual;
+select team_teamid_seq.nextval from dual;
+select team_teamid_seq.currval from dual;
+
+insert into teams
+values(team_teamid_seq.nextval, 'Marketing');
+    
+select * from teams
+where team_id = 3;
 
 
 
