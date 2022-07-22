@@ -481,6 +481,169 @@ values(team_teamid_seq.nextval, 'Marketing');
 select * from teams
 where team_id = 3;
 
+create sequence x_xid_seq
+    start with 10
+    increment by 5
+    maxvalue 20
+    nocache
+    nocycle;
+    
+select x_xid_seq.nextval from dual;
+
+drop sequence dept_deptid_seq;
+
+create sequence dept_deptid_seq
+    start with 400
+    increment by 10
+    maxvalue 1000;
+    
+insert into dept(department_id, department_name)
+values(dept_deptid_seq.nextval, 'Education');
+
+commit;
+
+drop index emp_lastname_idx;
+
+create index emp_lastname_idx
+on employees(last_name);
+
+select last_name, rowid
+from employees;
+
+select index_name, index_type, table_owner, table_name
+from user_indexes;
+
+create index dept_departmentname_idx
+on dept(department_name);
+
+select department_name, rowid
+from dept;
+
+---------------
+
+drop synonym team;
+
+create synonym team
+for departments;
+
+create synonym emps
+for employees;
+
+select * from emps;
+
+
+------------------------
+--mybatis table 생성
+
+drop user mybatis cascade;
+
+create user mybatis identified by mybatis default tablespace users;
+grant connect, resource to mybatis;
+
+
+create table mybatis.users (
+    user_id number(2) constraint users_userid_pk primary key,
+    user_name varchar2(12),
+    reg_date date
+);
+
+create table mybatis.addresses(
+    user_id number(2) constraint addr_userid_pk primary key
+                  constraint addr_userid_fk references mybatis.users(user_id),
+    address varchar2(30)
+);
+
+create table mybatis.posts(
+    post_id number(3) constraint posts_postid_pk primary key,
+    post_title varchar2(60),
+    post_content varchar2(120),
+    user_id number(2) constraint posts_userid_pk 
+                    references mybatis.users(user_id)
+);
+
+--table생성후 제약조건 만들때 
+create table mybatis.users(
+    user_id number(2),
+    user_name varchar2(12),
+    reg_date date
+);
+
+create table mybatis.addresses(
+    user_id number(2),
+    address varchar2(30)
+);
+
+create table mybatis.posts(
+    post_id number(3),
+    post_title varchar2(60),
+    post_content varchar2(120),
+    user_id number(2)
+);
+
+
+alter table mybatis.users
+    add constraint users_userid_pk primary key(user_id);
+alter table mybatis.addresses
+    add constraint addr_userid_pk primary key(user_id);
+alter table mybatis.posts
+    add constraint posts_postid_pk primary key(post_id);
+    
+alter table mybatis.addresses
+    add constraint addr_userid_fk foreign key(user_id)
+        references mybatis.users(user_id);
+alter table mybatis.posts
+    add constraint posts_userid_fk foreign key(user_id)
+        references mybatis.users(user_id);
+
+insert into mybatis.users
+    values(1, 'john', to_date('2022-07-22', 'yyyy-mm-dd'));
+
+insert into mybatis.users
+    values(2, 'terry', to_date('2022-07-23', 'yyyy-mm-dd'));
+    
+insert into mybatis.addresses
+    values(1, '서울시 마포구');
+    
+insert into mybatis.addresses
+    values(2, '성남시 분당구');
+
+insert into mybatis.posts
+    values(101, '사랑', '너와 나의 연결고리', 1);
+insert into mybatis.posts
+    values(102, '정의', '너와 나의 연대고리', 1);
+insert into mybatis.posts
+    values(201, '김치', '네가 있어야 밥을 먹지.', 2);
+insert into mybatis.posts
+    values(202, '비빔밥', '동학농민항쟁이 만든 음식이다.', 2);
+insert into mybatis.posts
+    values(203, '찹살떡', '네가 그리워.', 2);
+    
+commit;
+
+
+
+
+
+
+
+
+
+
+
+
+    
+    
+
+
+
+
+
+
+
+
+
+
+
 
 
 
