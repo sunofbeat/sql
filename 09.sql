@@ -88,13 +88,14 @@ begin
     end loop;
 end;  
 /       --프로시저(procedure)  '/'로 마무리
+--plsql
 
 select * from sa_reps;
 
 --과제 procedure 로 insert한 row들을 조회하라
 select *
 from sa_reps
-where id > 400;
+where id > 400; 
 
 ----------------------
 

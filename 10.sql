@@ -48,7 +48,7 @@ email varchar2(20),
 salary number(6) constraint emp_sal_ck check(salary > 1000), 
 department_id number(3),
 constraint emps_email_uk unique(email), --email칼럼을 조사했다고 명시
-constraint emps_deptid_fx foreign key(department_id)
+constraint emps_deptid_fk foreign key(department_id)
     references depts(department_id));
     
 select constraint_name, constraint_type, table_name
@@ -89,8 +89,8 @@ hire_date date constraint emp_hiredate_nn not null,
 job_id varchar2(10) constraint emp_jobid_nn not null,
 salary number(8) constraint emp_salary_ck check(salary > 0),
 commission_pct number(2, 2),
-manager_id number(6) constraint emp_managerid_fx references employees(employee_id),
-department_id number(4) constraint emp_dept_fx references hr.departments(department_id));
+manager_id number(6) constraint emp_managerid_fk references employees(employee_id),
+department_id number(4) constraint emp_dept_fk references hr.departments(department_id));
 
 create table emps(
 employee_id number(3) primary key, --제약조건
@@ -99,7 +99,7 @@ email varchar2(20),
 salary number(6) constraint emp_sal_ck check(salary > 1000), 
 department_id number(3),
 constraint emps_email_uk unique(email), --email칼럼을 조사했다고 명시
-constraint emps_deptid_fx foreign key(department_id)
+constraint emps_deptid_fk foreign key(department_id)
     references depts(department_id));
     
 select constraint_name, constraint_type, table_name
@@ -139,8 +139,8 @@ hire_date date constraint emp_hiredate_nn not null,
 job_id varchar2(10) constraint emp_jobid_nn not null,
 salary number(8) constraint emp_salary_ck check(salary > 0),
 commission_pct number(2, 2),
-manager_id number(6) constraint emp_managerid_fx references employees(employee_id),
-department_id number(4) constraint emp_dept_fx references hr.departments(department_id));
+manager_id number(6) constraint emp_managerid_fk references employees(employee_id),
+department_id number(4) constraint emp_dept_fk references hr.departments(department_id));
 
 
 --------------------------------
@@ -196,18 +196,18 @@ aid number(1) constraint a_aid_pk primary key);
 create table b(
 bid number(2),
 aid number(1),
-constraint b_aid_fx foreign key(aid) references a(aid));
+constraint b_aid_fk foreign key(aid) references a(aid));
 
 insert into a values(1);
 insert into b values(31, 1); --error
 insert into b values(32, 9); --error, parent key not found
 
 --제약조건을 끊음
-alter table b disable constraint b_aid_fx;
+alter table b disable constraint b_aid_fk;
 insert into b values(32, 9);
 
-alter table b enable constraint b_aid_fx; --error, parent keys not found
-alter table b enable novalidate constraint b_aid_fx;
+alter table b enable constraint b_aid_fk; --error, parent keys not found
+alter table b enable novalidate constraint b_aid_fk;
 --포린키 다시 살림
 
 insert into b values(33, 8); --error parent key not found
